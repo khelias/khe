@@ -113,6 +113,8 @@ If verification can't be performed in this environment, say so. Do not claim suc
 - Don't leave half-finished code or commented-out blocks
 - Don't add features beyond the task scope
 - Don't introduce abstractions for hypothetical future needs
+- Write verification artifacts (screenshots, saved pages, one-off scripts) to
+  the session scratchpad, not into a repo or `<KHE_ROOT>/`
 
 ---
 
