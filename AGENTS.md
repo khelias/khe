@@ -75,6 +75,27 @@ The `audit-agents-md` skill (loaded from `<KHE_ROOT>/.claude/skills/`)
 can be invoked on demand to check whether a project's AGENTS.md drifted
 from reality.
 
+## Who runs what
+
+The agent prepares, the operator executes anything that leaves this machine or
+touches a running host:
+
+- `git push`, `ssh`, and any command against the homelab VM are the operator's.
+  Hand them over as complete, copy-pasteable command blocks, one command per
+  block, in the order they must run. A half-given chain costs a round trip.
+- Commit locally as normal. Say plainly what still needs pushing.
+- Read-only APIs (Home Assistant, GitHub) the agent uses directly.
+
+## Where the estate is described
+
+- `../khe-meta/ESTATE.md` - the estate index: every repo, what it is for, where
+  it is deployed. Start there when it is not obvious which repo owns a thing.
+- `../khe-meta/house/` - private house documentation: Home Assistant rollout
+  and measurements, HVAC, network. Device ids, LAN addresses of house devices
+  and anything identifying live here and **never** in a public repo.
+- Each repo's own `AGENTS.md` - its commands, conventions and operating
+  procedure. `khe-homelab/AGENTS.md` has the Home Assistant procedure.
+
 ## Verification
 
 The agent MUST verify changes before declaring done:
