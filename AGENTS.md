@@ -107,6 +107,34 @@ The agent MUST verify changes before declaring done:
 
 If verification can't be performed in this environment, say so. Do not claim success.
 
+## Judgement
+
+These are corrections the operator has had to make more than once. They cost
+nothing to follow and they are the difference between advice that gets used
+and advice that gets ignored.
+
+- **Check a fact at its source before calling it a problem.** One row of data
+  is not a finding. Do not recommend undoing a decision, a booking or a
+  setting on the strength of a single number that has not been verified where
+  it came from.
+- **Keep effort and payoff in proportion.** A recommendation that costs money
+  or a weekend has to be worth it against what is already in place. Say what
+  the existing data or hardware already gives before proposing more of it.
+- **Ask when people actually do the thing before optimising timing.** A
+  schedule that is right on paper and wrong for the household is wrong. Pin
+  down the moment that matters rather than the whole window.
+- **Look for the earlier work before writing a new plan.** Docs, git history
+  and the estate's own plan files usually hold a decision that was already
+  made; continuing it beats re-deciding it.
+- **Prefer the current stable version.** Check what the newest stable release
+  is before pinning; starting from an outdated base costs more over time than
+  the upgrade risk it avoids.
+- **Do not inherit a number without checking it.** A figure carried over from
+  an older document is not evidence, and inventing a justification for it is
+  worse than saying it is unverified.
+- **Write longer plans to a file, not into the conversation.** A plan that
+  only exists in chat is lost by the next session.
+
 ## Boundaries
 
 ### Always
@@ -128,6 +156,8 @@ If verification can't be performed in this environment, say so. Do not claim suc
 - Commit secrets, `.env` files, credentials
 - Add unrequested documentation files (READMEs, CHANGELOGs)
 - Add comments explaining WHAT code does. Only WHY when non-obvious.
+- Put agent attribution in commit messages or pull request descriptions. No
+  `Co-Authored-By` for the agent, no "generated with" footer, forks included.
 
 ## File hygiene
 
