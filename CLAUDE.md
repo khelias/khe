@@ -10,12 +10,13 @@ effort; no `/effort ultracode` or workflows unless the operator asks.
 
 - **Plan** a non-trivial change in plan mode, with each step's check
   command. Plan files land in `repos/khe-meta/plans/` (`plansDirectory`).
-  If a task needs a plan and the session is not in plan mode, say so
-  instead of planning in chat. After writing the plan file and before
-  handing over the `/goal` line, have a subagent without this conversation
-  review it: what does the plan get wrong or leave out that would break the
-  goal or correctness? Gaps, not style. Verify each finding, fix the plan
-  for the real ones, say which were dropped.
+  The operator does not switch modes: when a task needs a plan, enter plan
+  mode yourself with the `EnterPlanMode` tool rather than planning in chat.
+  After writing the plan file and before handing over the `/goal` line,
+  have a subagent without this conversation review it: what does the plan
+  get wrong or leave out that would break the goal or correctness? Gaps,
+  not style. Verify each finding, fix the plan for the real ones, say which
+  were dropped.
 - **Execute** a written plan through `/goal`, which only the operator can
   type: end the planning turn with the exact line to paste, a condition
   provable from output plus a turn cap, e.g. `/goal every step in
