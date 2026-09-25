@@ -10,21 +10,25 @@ effort; no `/effort ultracode` or workflows unless the operator asks.
 
 - **Plan** a non-trivial change in plan mode, with each step's check
   command. Plan files land in `repos/khe-meta/plans/` (`plansDirectory`).
+  If a task needs a plan and the session is not in plan mode, say so
+  instead of planning in chat.
 - **Execute** a written plan through `/goal`, which only the operator can
   type: end the planning turn with the exact line to paste, a condition
   provable from output plus a turn cap, e.g. `/goal every step in
   repos/khe-meta/plans/x.md is checked and npm test exits 0 in the output,
   or stop after 20 turns`.
-- **Review** a non-trivial code change before committing: `/code-review`
-  (medium; `high` for risky or public-facing changes). Verify each finding
-  against the code, fix the confirmed ones, and say which were dropped.
+- **Review** every code change (not docs-only) before committing:
+  `/code-review` (medium; `high` for risky or public-facing changes).
+  Verify each finding against the code, fix the confirmed ones, and say
+  which were dropped. If you skip the review, say so and why.
 - **See it working** for UI changes: `/run` in the browser pane.
 
 ## Harness facts
 
 - **`git commit` in a repo is gated.** `.claude/hooks/commit-gate.sh` runs
   that repo's `check:` first and blocks the commit on failure. Fix the
-  cause; never work around the gate.
+  cause; never work around the gate. Do not run `check:` yourself right
+  before committing; the gate already does.
 - **Parallel sessions:** for a second session in the same repo, use a
   worktree of `repos/<name>`, not a desktop worktree of the workspace root,
   which has no `repos/`. Install dependencies there before committing.
