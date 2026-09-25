@@ -2,9 +2,12 @@
 # One "- name:" entry per repo, keys on their own lines; the scripts read
 # this with a line parser, not a YAML library, so keep the flat shape.
 # check: runs in the repo before Claude commits there (.claude/hooks/commit-gate.sh).
+# private: true exempts a repo from the gate's personal-data scan; every other
+# repo, and one missing from this list, is scanned (.claude/hooks/pii-rules.toml).
 repos:
   - name: khe-meta
     url: https://github.com/khelias/khe-meta.git
+    private: true
     description: Estate index, portfolio decisions, private house documentation.
   - name: khe-homelab
     url: https://github.com/khelias/khe-homelab.git
@@ -24,6 +27,7 @@ repos:
     description: AI-narrated pass-the-phone party game.
   - name: khe-trips
     url: https://github.com/khelias/khe-trips.git
+    private: true
     check: npm run -s lint && npm run -s typecheck && npm test --silent && npm run -s test:e2e
     description: Private family trip atlas.
   - name: ha-estfeed

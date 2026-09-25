@@ -34,6 +34,15 @@ effort; no `/effort ultracode` or workflows unless the operator asks.
   that repo's `check:` first and blocks the commit on failure. Fix the
   cause; never work around the gate. Do not run `check:` yourself right
   before committing; the gate already does.
+- **The gate also scans for personal data** in every repo, the root
+  included, unless `repos/repos.yaml` marks it `private: true`: lines the
+  commit adds (staged, unstaged, untracked) and the message, against the
+  gitleaks patterns in `.claude/hooks/pii-rules.toml` (MAC, isikukood,
+  phone, Estonian coordinates, e-mail, LAN address). Pattern-only: names
+  and street addresses are not caught and stay a judgement call. Commits
+  made by merge, cherry-pick, revert or rebase are not scanned, and a
+  same-call `git add -f` is refused: force-add first, then commit. A false
+  positive gets an allowlist entry with a reason in `pii-rules.toml`.
 - **Parallel sessions:** for a second session in the same repo, use a
   worktree of `repos/<name>`, not a desktop worktree of the workspace root,
   which has no `repos/`. Install dependencies there before committing.

@@ -1,0 +1,64 @@
+# Personal-data rules for .claude/hooks/commit-gate.sh, which scans the lines
+# a commit adds to any repo not marked `private: true` in repos/repos.yaml.
+#
+# Pattern-only by decision: no literal list of names, street addresses or
+# numbers is kept anywhere, so names and addresses are not caught and stay a
+# judgement call. Secrets are covered elsewhere (GitHub push protection,
+# khe-homelab's gitleaks hook), so there is no [extend] of the default rules.
+#
+# A false positive gets an allowlist entry here with a one-line reason, never
+# a bypass. Go RE2 syntax: no lookarounds; allowlists test the whole match.
+
+title = "khe personal-data rules"
+
+[[rules]]
+id = "mac-address"
+description = "Hardware address: identifies a device in the house."
+regex = '''\b[0-9A-Fa-f]{2}(?:[:-][0-9A-Fa-f]{2}){5}\b'''
+
+[[rules]]
+id = "ee-isikukood"
+description = "Estonian personal ID code: century digit, birth date, serial and check digit."
+regex = '''\b[1-6]\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])\d{4}\b'''
+
+[[rules]]
+id = "ee-phone"
+description = "Estonian phone number in international form: 7 or 8 digits, any grouping."
+regex = '''(?:\+372|\b00372)[ -]?\d(?:[ -]?\d){6,7}\b'''
+
+[[rules]]
+id = "ee-gps-pair"
+description = "Coordinate pair inside Estonia, lat,lon or GeoJSON lon,lat, precise enough to find a house."
+regex = '''\b(?:5[7-9]\.\d{4,}\s*,\s*2[1-8]\.\d{4,}|2[1-8]\.\d{4,}\s*,\s*5[7-9]\.\d{4,})\b'''
+
+[[rules]]
+id = "ee-gps-key"
+description = "Latitude or longitude value in the Estonian range, set on a named key."
+regex = '''(?i)\b(?:lat(?:itude)?|lon(?:gitude)?|lng)["']?\s*[:=]\s*["']?(?:5[7-9]|2[1-8])\.\d{3,}'''
+
+[[rules]]
+id = "email"
+description = "E-mail address of a person."
+regex = '''\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'''
+
+[[rules.allowlists]]
+description = "Not a person: SSH remotes, documentation domains, no-reply senders, LAN hostnames, retina image names, and the deliberate public contact address on khe.ee."
+regexTarget = "match"
+regexes = [
+  '''^git@''',
+  '''(?i)@example\.(?:com|org|net)$''',
+  '''(?i)noreply''',
+  '''(?i)\.(?:lan|local|localhost|internal|home\.arpa)$''',
+  '''(?i)\.(?:png|jpe?g|svg|webp|gif|avif)$''',
+  '''^kaidoelias@gmail\.com$''',
+]
+
+[[rules]]
+id = "lan-address"
+description = "Home LAN address: maps a device in the house."
+regex = '''\b192\.168\.\d{1,3}\.\d{1,3}\b'''
+
+[[rules.allowlists]]
+description = "Infrastructure already documented in khe-homelab: network, gateway, Proxmox host, Docker VM, broadcast."
+regexTarget = "match"
+regexes = ['''^192\.168\.0\.(?:0|1|10|11|255)$''']
