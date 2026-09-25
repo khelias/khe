@@ -1,0 +1,4 @@
+# Claude Code's Grep respects .gitignore, which hides repos/. ripgrep gives
+# .rgignore precedence, so this puts the cloned repos back into searches run
+# from the workspace root. Each repo's own .gitignore still applies inside it.
+!/repos/*

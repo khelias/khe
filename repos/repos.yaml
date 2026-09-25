@@ -1,0 +1,26 @@
+# Repos cloned into repos/<name>/ by scripts/workspace.sh.
+# One "- name:" entry per repo, keys on their own lines; the script reads
+# this with a line parser, not a YAML library, so keep the flat shape.
+repos:
+  - name: khe-meta
+    url: https://github.com/khelias/khe-meta.git
+    description: Estate index, portfolio decisions, private house documentation.
+  - name: khe-homelab
+    url: https://github.com/khelias/khe-homelab.git
+    description: Proxmox + Docker Compose infrastructure and Home Assistant.
+  - name: khe-sites
+    url: https://github.com/khelias/khe-sites.git
+    description: Static source for khe.ee and the games.khe.ee launcher.
+  - name: khe-study
+    url: https://github.com/khelias/khe-study.git
+    description: Educational web game platform.
+  - name: khe-ai-adventure
+    url: https://github.com/khelias/khe-ai-adventure.git
+    description: AI-narrated pass-the-phone party game.
+  - name: khe-trips
+    url: https://github.com/khelias/khe-trips.git
+    description: Private family trip atlas.
+  - name: ha-estfeed
+    url: https://github.com/khelias/ha-estfeed.git
+    upstream: https://github.com/tehisain/ha-estfeed.git
+    description: Fork of the Elering Estfeed Home Assistant integration.

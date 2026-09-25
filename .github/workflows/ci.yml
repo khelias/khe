@@ -21,7 +21,7 @@ jobs:
       - name: Install Python dependencies
         run: pip install pyyaml
 
-      - name: Validate frontmatter (agents/, skills/)
+      - name: Validate frontmatter (.claude/agents, .claude/skills)
         run: python scripts/validate_frontmatter.py
 
       - name: Check LAST_REVIEWED freshness
@@ -56,51 +56,24 @@ jobs:
             './**/*.md'
           fail: true
 
-  install:
-    name: install.sh idempotency
+  workspace:
+    name: Workspace manifest
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - name: Run install.sh twice and assert idempotency
+      - name: Parse repos.yaml and check every entry has a name and URL
         shell: bash
         run: |
           set -euo pipefail
-          export HOME=$(mktemp -d)
-          echo "Using HOME=$HOME"
-
-          echo ""
-          echo "=== First run ==="
-          first=$(bash install.sh)
-          echo "$first"
-          first_links=$(echo "$first" | grep -c '^  link    ' || true)
-
-          echo ""
-          echo "=== Second run ==="
-          second=$(bash install.sh)
-          echo "$second"
-          second_links=$(echo "$second" | grep -c '^  link    ' || true)
-          second_skips=$(echo "$second" | grep -c '^  skip    ' || true)
-          second_backups=$(echo "$second" | grep -c '^  backup  ' || true)
-
-          echo ""
-          echo "First run created $first_links symlinks."
-          echo "Second run: $second_links new links, $second_skips skipped, $second_backups backups."
-
-          fail=0
-          if [ "$second_links" -ne 0 ]; then
-            echo "FAIL: second run created $second_links new symlinks"
-            fail=1
-          fi
-          if [ "$second_backups" -ne 0 ]; then
-            echo "FAIL: second run created $second_backups backups"
-            fail=1
-          fi
-          if [ "$second_skips" -ne "$first_links" ]; then
-            echo "FAIL: second-run skip count ($second_skips) != first-run link count ($first_links)"
-            fail=1
-          fi
-          if [ "$fail" -ne 0 ]; then
+          bash -n scripts/workspace.sh
+          out=$(scripts/workspace.sh status)
+          echo "$out"
+          listed=$(grep -c '^  - name:' repos/repos.yaml)
+          parsed=$(echo "$out" | grep -c '(not cloned)')
+          urls=$(grep -cE '^    url: https://' repos/repos.yaml)
+          if [ "$listed" -ne "$parsed" ] || [ "$listed" -ne "$urls" ]; then
+            echo "FAIL: $listed entries, $parsed parsed, $urls with an https url"
             exit 1
           fi
-          echo "OK: install.sh is idempotent."
+          echo "OK: $listed repos in the manifest."

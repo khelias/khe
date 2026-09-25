@@ -1,8 +1,8 @@
-# skills/
+# .claude/skills/
 
 Reusable workflow guides the agent invokes when relevant. Each skill is a
 folder `<name>/SKILL.md` with YAML frontmatter; `name` must match the
-folder. A flat `skills/<name>.md` is never discovered by Claude Code (the
+folder. A flat `<name>.md` here is never discovered by Claude Code (the
 four skills here sat unloaded from May to September 2026 for that reason),
 and CI now rejects one.
 

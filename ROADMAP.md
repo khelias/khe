@@ -4,13 +4,65 @@ Open work from the 2026-09-25 review against Claude Code 2.1.282, Codex and
 the Agent Skills spec. Done items from that review are logged in
 [`LAST_REVIEWED.md`](LAST_REVIEWED.md). Order is by payoff against effort.
 
+## Now: become the workspace repo
+
+Decided 2026-09-25. This repo turns into the KHE workspace root, the
+"meta-repo / repo-of-repos" layout: `<KHE_ROOT>` itself is the checkout, the
+other repos are cloned into gitignored `repos/<name>/`, and no symlinks or
+install script are needed. Proposed new name: `khe` (cloning then yields
+the `khe/` folder that is `<KHE_ROOT>`; GitHub redirects the old URL).
+
+Tested on a prototype with headless Claude Code 2.1.274 (2026-09-25):
+
+| Layout | Read in child | Root-level Grep sees child | Child `CLAUDE.md` loads | Child `.claude/skills` loads |
+|---|---|---|---|---|
+| child not ignored | yes | yes | yes | yes |
+| `/repos/*` in `.gitignore` | yes | no | yes | no |
+| same + `.ignore` negation | yes | no | yes | no |
+| same + `.rgignore` negation | yes | **yes** | yes | no |
+| `.git/info/exclude` | yes | no | yes | no |
+
+So: `.gitignore` + `.rgignore` (`!/repos/*`). Skills inside a child repo
+load only when a session starts in that repo; skills needed from the
+workspace root live in the root `.claude/skills/`, scoped with `paths:`.
+No child repo has skills today, so nothing is lost.
+
+Steps (agent, local):
+
+1. Restructure this repo in place and commit: `skills/`, `agents/`,
+   `hooks/`, `settings.json` move under `.claude/`; `CLAUDE.md` takes the
+   umbrella content and imports `@repos/khe-meta/ESTATE.md`;
+   `CLAUDE-umbrella.md`, `install.sh`, `install.ps1` and the CI install job
+   go; add `repos/repos.yaml` (name, url, description), `repos/README.md`,
+   `scripts/workspace.sh clone|pull|status`, `.gitignore`, `.rgignore`.
+   Validator and docs follow the new paths.
+2. Move on disk: drop the root symlinks, lift this checkout up to
+   `<KHE_ROOT>`, move every other repo into `repos/`. `<KHE_ROOT>` keeps its
+   path, so auto memory, session history and `settings.local.json` stay.
+3. Local state: `.claude/launch.json` paths to `repos/...`; replace the
+   ~540-rule `settings.local.json` with a clean one (old copy kept outside
+   the repo).
+4. Verify: clean `git status` at the root and in every repo,
+   `workspace.sh status`, validator, and a headless session at the root
+   that lists the skills and greps into `repos/`.
+5. Sweep references: `khe-meta` (ESTATE.md, README), mentions in
+   `khe-homelab` and `khe-study`, the absolute path in
+   `khe-study/docs/qa/full-game-qa-smoke-prompt.md`, auto-memory entries
+   with old paths.
+
+Steps (operator): rename the GitHub repo, point `origin` at the new URL,
+push this repo and every repo touched in step 5.
+
+Known trade-off: a desktop session started in worktree mode at the root
+gets a worktree without `repos/`. Start such sessions inside the repo.
+
 ## Next
 
-1. **Prune `<KHE_ROOT>/.claude/settings.local.json`.** About 540 allow
-   rules, most of them one-off `python3`/`grep`/`sed` invocations and
-   session-scratchpad paths from past sessions. Empty it and let
-   `/fewer-permission-prompts` propose a short allowlist for the tracked
-   `settings.json`; auto mode covers the rest.
+1. **Short allowlist for the tracked `settings.json`.** The old
+   `settings.local.json` (about 540 one-off rules, which Claude Code now
+   warns about at startup) is replaced in migration step 3. After a few
+   weeks, let `/fewer-permission-prompts` propose the rules worth tracking;
+   auto mode covers the rest.
 2. **Share skills with Codex.** `.agents/skills/` is the cross-tool path
    (Codex, Copilot, Cursor, Antigravity read it; Claude Code does not).
    Have `install.{sh,ps1}` also link `<KHE_ROOT>/.agents/skills` to

@@ -67,9 +67,9 @@ update.
 
 ## What this skill does NOT do
 
-- Does not check umbrella-level rules (`<KHE_ROOT>/AGENTS.md`,
-  `<KHE_ROOT>/CLAUDE.md`). Those are managed via the `khe-ai-rules`
-  repo and reviewed quarterly.
+- Does not check workspace-root rules (`<KHE_ROOT>/AGENTS.md`,
+  `<KHE_ROOT>/CLAUDE.md`). Those belong to the workspace repo itself and
+  are reviewed quarterly.
 - Does not validate prose quality, grammar, or em-dashes (handled by
-  umbrella-level rules).
+  workspace-root rules).
 - Does not edit files. Diagnostic only.

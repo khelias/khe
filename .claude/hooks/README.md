@@ -1,4 +1,4 @@
-# hooks/
+# .claude/hooks/
 
 Claude Code hooks - scripts that run on events (`PreToolUse`, `PostToolUse`,
 `SessionStart`, `Stop`, etc.).
@@ -29,7 +29,7 @@ Hooks are configured in `settings.json`:
 {
   "hooks": {
     "PreToolUse": [
-      { "matcher": "Bash", "command": "$CLAUDE_PROJECT_DIR/hooks/check-bash.sh" }
+      { "matcher": "Bash", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/check-bash.sh" }
     ]
   }
 }

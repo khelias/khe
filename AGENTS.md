@@ -1,14 +1,14 @@
 # Personal AGENTS.md
 
-Personal instructions for AI coding agents, scoped to the KHE umbrella.
+Personal instructions for AI coding agents, at the root of the KHE
+workspace repo (`<KHE_ROOT>`; the other repos live in `repos/<name>/`).
 Auto-loaded by:
 
-- OpenAI Codex CLI (via `<KHE_ROOT>/AGENTS.md`, symlinked to this file)
+- OpenAI Codex CLI and 20+ other AGENTS.md-aware tools, when run with cwd at `<KHE_ROOT>`
 - Claude Code (via `<KHE_ROOT>/CLAUDE.md` which `@`-imports this file)
-- Cursor, Aider, Copilot, and 20+ other AGENTS.md-aware tools, when run with cwd at `<KHE_ROOT>`
 
 This file holds **personal preferences** that apply to every project
-under the KHE umbrella. Other projects on the same machine are not
+in the KHE workspace. Other projects on the same machine are not
 affected by this file - their own `~/.claude/` or per-project setup
 applies instead. For KHE-project-specific instructions, use a
 per-project `AGENTS.md`.
@@ -47,7 +47,7 @@ concept, behaviour shift), sweep the project's existing docs for staleness
 before declaring done. Minimum sweep targets:
 
 - `README.md`, `ARCHITECTURE.md`, `ROADMAP.md` if present.
-- `AGENTS.md` / `CLAUDE.md` (project + umbrella).
+- `AGENTS.md` / `CLAUDE.md` (project + workspace root).
 - Affected ADRs (the status field and any claims about current behaviour).
 - Other `docs/*.md` whose subject overlaps the change.
 
@@ -88,13 +88,15 @@ touches a running host:
 
 ## Where the estate is described
 
-- `../khe-meta/ESTATE.md` - the estate index: every repo, what it is for, where
+- `repos/khe-meta/ESTATE.md` - the estate index: every repo, what it is for, where
   it is deployed. Start there when it is not obvious which repo owns a thing.
-- `../khe-meta/house/` - private house documentation: Home Assistant rollout
+- `repos/khe-meta/house/` - private house documentation: Home Assistant rollout
   and measurements, HVAC, network. Device ids, LAN addresses of house devices
   and anything identifying live here and **never** in a public repo.
 - Each repo's own `AGENTS.md` - its commands, conventions and operating
-  procedure. `khe-homelab/AGENTS.md` has the Home Assistant procedure.
+  procedure. `repos/khe-homelab/AGENTS.md` has the Home Assistant procedure.
+- `repos/repos.yaml` - which repos the workspace clones;
+  `scripts/workspace.sh status` shows each one's branch and dirty state.
 
 ## Verification
 
@@ -173,7 +175,7 @@ and advice that gets ignored.
 
 - **Project-specific commands and architecture** → that project's `AGENTS.md`
 - **Tech-stack patterns** (TypeScript, Playwright, etc.) → `shared/*.md`, copied into project AGENTS.md
-- **Workflow recipes** (TDD loop, verification, commit style) → `skills/<name>/SKILL.md`
-- **Specialized review/planning tasks** → `agents/*.md` (delegate via subagent)
-- **Claude Code hook scripts** → `hooks/*.{sh,js}`
+- **Workflow recipes** (TDD loop, verification, commit style) → `.claude/skills/<name>/SKILL.md`
+- **Specialized review/planning tasks** → `.claude/agents/*.md` (delegate via subagent)
+- **Claude Code hook scripts** → `.claude/hooks/*.{sh,js}`
 - **Claude-specific imports/extensions** → `CLAUDE.md`

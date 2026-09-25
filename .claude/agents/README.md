@@ -1,4 +1,4 @@
-# agents/
+# .claude/agents/
 
 Specialized subagents for delegated tasks. Each agent is a markdown file with
 YAML frontmatter that the main agent dispatches to.
