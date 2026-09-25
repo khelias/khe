@@ -4,6 +4,7 @@ Track when this repo was last reviewed against upstream best practices.
 
 | Date       | Notes |
 |------------|-------|
+| 2026-09-25 | Review against Claude Code 2.1.282, Codex, Agent Skills spec. Found the four skills had never loaded (flat `*.md`; discovery needs `<name>/SKILL.md`): moved them, CI now rejects flat files. `settings.json`: dropped `model: sonnet` pin and `MAX_THINKING_TOKENS` (ignored on adaptive models), emptied `attribution`. `docs/resolution.md` updated for native AGENTS.md reading (v2.1.277, only without CLAUDE.md). Open work in `ROADMAP.md`. |
 | 2026-05-03 | Phase 1.5: skills/ (verification, tdd, commit-style) + agents/ (code-reviewer, planner) added. Reviewed 5 EWC source files (1750 lines combined), kept ~25% as adapted, wrote rest from scratch. Each file attributes source and notes what was stripped. |
 | 2026-05-03 | Phase 1: frame committed. Foundation built from agents.md spec + Anthropic memory docs + OpenAI Codex AGENTS.md guide + GitHub Blog 2500-repo analysis. |
 

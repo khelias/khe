@@ -30,10 +30,18 @@ same machine and are intentionally left untouched.
 - **Sub-directory CLAUDE.md files load lazily** - only when Claude reads or
   edits a file in that subtree.
 - `@path` imports are resolved relative to the file containing the import.
-  Max import depth: 5.
-- **Claude Code reads `CLAUDE.md`, not `AGENTS.md`.** To pick up an
-  AGENTS.md, the matching CLAUDE.md must `@`-import it (the pattern this
-  repo uses).
+  Max import depth: four hops.
+- **Claude Code reads `AGENTS.md` natively only when there is no
+  `CLAUDE.md`** (from v2.1.277). The default mode, `claude-md-or-agents-md`,
+  skips every `AGENTS.md` once a `CLAUDE.md`, `.claude/CLAUDE.md` or
+  `CLAUDE.local.md` exists in the cwd or any parent. The umbrella
+  `<KHE_ROOT>/CLAUDE.md` is such a parent for every KHE repo, so each
+  CLAUDE.md here still `@`-imports its AGENTS.md (the pattern this repo
+  uses). The alternative, `claude-md-and-agents-md`, is a user-level
+  setting and would change every project on the machine, not just KHE.
+- **Skills are discovered only as `skills/<name>/SKILL.md`.** A flat
+  `skills/*.md` file is silently ignored. `scripts/validate_frontmatter.py`
+  fails CI on one.
 
 What this means for KHE: when you start Claude in `<KHE_ROOT>/`, the
 umbrella layer loads up front (personal prefs via `@AGENTS.md`, estate

@@ -173,7 +173,7 @@ and advice that gets ignored.
 
 - **Project-specific commands and architecture** → that project's `AGENTS.md`
 - **Tech-stack patterns** (TypeScript, Playwright, etc.) → `shared/*.md`, copied into project AGENTS.md
-- **Workflow recipes** (TDD loop, verification, commit style) → `skills/*.md`
+- **Workflow recipes** (TDD loop, verification, commit style) → `skills/<name>/SKILL.md`
 - **Specialized review/planning tasks** → `agents/*.md` (delegate via subagent)
 - **Claude Code hook scripts** → `hooks/*.{sh,js}`
 - **Claude-specific imports/extensions** → `CLAUDE.md`

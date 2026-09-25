@@ -28,11 +28,12 @@ This repo bets on the **standard** ([agents.md](https://agents.md/)), not any sp
 | `AGENTS.md` | Personal prefs, tool-agnostic. → `<KHE_ROOT>/AGENTS.md`. Auto-read by Codex and 20+ other agents.md-aware tools when launched at the KHE root. |
 | `CLAUDE.md` | One-line `@AGENTS.md` import + Claude-only extras section. Used by `install` as the fallback `<KHE_ROOT>/CLAUDE.md` target when `khe-meta` is not cloned. |
 | `CLAUDE-umbrella.md` | Combines `@AGENTS.md` and `@../khe-meta/ESTATE.md`. Used as the `<KHE_ROOT>/CLAUDE.md` target when `khe-meta` is cloned alongside this repo. |
-| `settings.json` | Claude Code settings. Token-optimization defaults (`model: sonnet`, `MAX_THINKING_TOKENS=10000`, `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=50`) plus deliberate permission rules: read-only `gh pr`/`gh run` inspection and reversible per-PR writes (`create`, `merge`, `update-branch`, `comment`) are allowed; `--no-verify` is denied so the AGENTS.md "never skip git hooks" rule is enforced, not just documented. Destructive commands (`rm`, force-push) stay denied in `~/.claude/settings.json`, and deny always beats allow. → `<KHE_ROOT>/.claude/settings.json`. |
+| `settings.json` | Claude Code settings. No model pin (the Claude Code default applies), `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=50`, and `attribution` emptied so the AGENTS.md "no agent attribution" rule is enforced by the harness. The object form is used because `attribution: false` needs v2.1.281+ and older versions skip the whole file on it. Also deliberate permission rules: read-only `gh pr`/`gh run` inspection and reversible per-PR writes (`create`, `merge`, `update-branch`, `comment`) are allowed; `--no-verify` is denied so the AGENTS.md "never skip git hooks" rule is enforced, not just documented. Destructive commands (`rm`, force-push) stay denied in `~/.claude/settings.json`, and deny always beats allow. → `<KHE_ROOT>/.claude/settings.json`. |
 | `codex/config.toml` | OpenAI Codex CLI config, commented placeholder. Not wired by `install` - Codex reads its CLI config from `~/.codex/config.toml` (user-global, no project-scoped equivalent). Copy manually if you need it. |
-| `skills/verification.md` | Run build/typecheck/test/lint and report honestly before declaring done. |
-| `skills/tdd.md` | RED/GREEN/REFACTOR cycle with git checkpoints, for new features and bug fixes. |
-| `skills/commit-style.md` | Conventional Commits format. Body explains WHY, not WHAT. |
+| `skills/verification/SKILL.md` | Run build/typecheck/test/lint and report honestly before declaring done. |
+| `skills/tdd/SKILL.md` | RED/GREEN/REFACTOR cycle with git checkpoints, for new features and bug fixes. |
+| `skills/commit-style/SKILL.md` | Conventional Commits format. Body explains WHY, not WHAT. |
+| `skills/audit-agents-md/SKILL.md` | Check a project's AGENTS.md against the repo's actual state; reports drift, does not edit. |
 | `agents/code-reviewer.md` | Second-pass reviewer with confidence filter (>80%) and severity rubric. |
 | `agents/planner.md` | Plan-before-code subagent for non-trivial features and refactors. |
 | `shared/` | Tech-stack snippets for per-project AGENTS.md. Empty - Phase 3. |
@@ -41,6 +42,7 @@ This repo bets on the **standard** ([agents.md](https://agents.md/)), not any sp
 | `docs/resolution.md` | Reference for how `AGENTS.md` / `CLAUDE.md` are discovered and merged across umbrella and project layers. Cited from canonical Anthropic + agents.md docs. |
 | `renovate.json` | Renovate config. The only managed dependencies here are the GitHub Actions in `ci.yml`; non-major bumps automerge, majors wait for dashboard approval. |
 | `LAST_REVIEWED.md` | Quarterly review log against upstream sources. |
+| `ROADMAP.md` | Open work from the latest review, ordered by payoff against effort. |
 | `LICENSE` | MIT. |
 
 You should be able to read every file in this repo in 30 minutes. If you can't, something has gone wrong.
@@ -76,10 +78,12 @@ This repo is foundation only. Personal preferences and project-specific patterns
 | Phase | Scope |
 |-------|-------|
 | **1** | Pure scaffolding: structure, install scripts, AGENTS.md/CLAUDE.md/settings.json placeholders. |
-| **1.5** (this commit) | Curated `skills/` (3 files) + `agents/` (2 files), reviewed file-by-file from EWC and trimmed/rewritten. Total ~425 lines, every rule justified. |
+| **1.5** | Curated `skills/` (3 files) + `agents/` (2 files), reviewed file-by-file from EWC and trimmed/rewritten. Total ~425 lines, every rule justified. |
 | **2** | Fill in personal preferences in `AGENTS.md` (Communication, Code style sections). |
 | **3** | Extract reusable tech-stack snippets from existing project `CLAUDE.md` / `.cursor/rules/` into `shared/`. |
 | **4** | Per-project migration: replace existing CLAUDE.md / .cursor/rules in project repos with thin per-project `AGENTS.md` + imports from `shared/`. |
+
+Work found by the 2026-09 review against the current tooling lives in [`ROADMAP.md`](ROADMAP.md).
 
 ## Staying current
 
