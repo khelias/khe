@@ -63,7 +63,7 @@ update.
 - When picking up a project after a long gap (months)
 - After a refactor that touched directories, deps, or commands
 - When the user asks "is AGENTS.md still accurate?"
-- During the quarterly review (see `LAST_REVIEWED.md` pattern)
+- During the quarterly review of the workspace setup
 
 ## What this skill does NOT do
 

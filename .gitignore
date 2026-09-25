@@ -1,7 +1,6 @@
 # The KHE repos are independent checkouts cloned by scripts/workspace.sh.
 # `repos/*` rather than `repos/` so the manifest and README stay tracked.
 /repos/*
-!/repos/README.md
 !/repos/repos.yaml
 
 # Local-only overrides (per-machine, not committed)

@@ -24,9 +24,6 @@ jobs:
       - name: Validate frontmatter (.claude/agents, .claude/skills)
         run: python scripts/validate_frontmatter.py
 
-      - name: Check LAST_REVIEWED freshness
-        run: python scripts/check_freshness.py
-
   links:
     name: Link check
     runs-on: ubuntu-latest
