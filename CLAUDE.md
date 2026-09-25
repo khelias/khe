@@ -25,12 +25,14 @@ Run these without being asked; hand-invoked tools went unused. Keep them
 cheap: default effort, no `/effort ultracode`, no workflows unless the
 operator asks.
 
-- **Plan** a non-trivial change in plan mode and save it as a file in the
-  repo it belongs to, with each step's check command.
+- **Plan** a non-trivial change in plan mode, with each step's check
+  command. Plan files land in `repos/khe-meta/plans/` (`plansDirectory`),
+  private and versioned whichever repo the plan is for.
 - **Execute** a written plan through `/goal`, which only the operator can
   type: end the planning turn with the exact line to paste, a condition
   provable from output plus a turn cap, e.g. `/goal every step in
-  plans/x.md is checked and npm test exits 0, or stop after 20 turns`.
+  repos/khe-meta/plans/x.md is checked and npm test exits 0 in the output,
+  or stop after 20 turns`.
 - **Review** before committing a non-trivial code change: `/code-review`
   (medium; `high` for risky or public-facing changes). Verify each finding
   against the code before fixing it, fix the confirmed ones, drop the rest,
@@ -41,6 +43,15 @@ operator asks.
 ### Harness facts
 
 True for Claude Code, not necessarily for other tools:
+
+- **`git commit` in a repo is gated.** `.claude/hooks/commit-gate.sh` runs
+  that repo's `check:` from `repos/repos.yaml` first and blocks the commit
+  with the failure output. Fix the cause; never work around the gate.
+- **Parallel sessions:** sessions in different repos don't collide. For a
+  second session in the same repo, use a worktree of that repo (ask for one
+  in `repos/<name>`), not a desktop worktree of the workspace root, which
+  has no `repos/`. Install dependencies in the new worktree before the
+  commit gate can pass.
 
 - **Skills inside `repos/<name>/.claude/skills/` do not load from here.**
   Claude Code skips skill discovery in gitignored directories. A skill needed

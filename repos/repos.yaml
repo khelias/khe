@@ -1,26 +1,33 @@
 # Repos cloned into repos/<name>/ by scripts/workspace.sh.
-# One "- name:" entry per repo, keys on their own lines; the script reads
+# One "- name:" entry per repo, keys on their own lines; the scripts read
 # this with a line parser, not a YAML library, so keep the flat shape.
+# check: runs in the repo before Claude commits there (.claude/hooks/commit-gate.sh).
 repos:
   - name: khe-meta
     url: https://github.com/khelias/khe-meta.git
     description: Estate index, portfolio decisions, private house documentation.
   - name: khe-homelab
     url: https://github.com/khelias/khe-homelab.git
+    check: bash -n scripts/*.sh
     description: Proxmox + Docker Compose infrastructure and Home Assistant.
   - name: khe-sites
     url: https://github.com/khelias/khe-sites.git
+    check: npm run -s check
     description: Static source for khe.ee and the games.khe.ee launcher.
   - name: khe-study
     url: https://github.com/khelias/khe-study.git
+    check: npm run -s lint && npm run -s typecheck && npm run -s test:run && npm run -s test:e2e
     description: Educational web game platform.
   - name: khe-ai-adventure
     url: https://github.com/khelias/khe-ai-adventure.git
+    check: npm run -s lint && npx tsc -b && npm run -s test:unit
     description: AI-narrated pass-the-phone party game.
   - name: khe-trips
     url: https://github.com/khelias/khe-trips.git
+    check: npm run -s lint && npm run -s typecheck && npm test --silent && npm run -s test:e2e
     description: Private family trip atlas.
   - name: ha-estfeed
     url: https://github.com/khelias/ha-estfeed.git
+    check: .venv/bin/ruff check custom_components tests && .venv/bin/ruff format --check custom_components tests
     upstream: https://github.com/tehisain/ha-estfeed.git
     description: Fork of the Elering Estfeed Home Assistant integration.

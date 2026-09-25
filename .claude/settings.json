@@ -1,11 +1,11 @@
 {
+  "env": {
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "50"
+  },
   "attribution": {
     "commit": "",
     "pr": "",
     "sessionUrl": false
-  },
-  "env": {
-    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "50"
   },
   "permissions": {
     "allow": [
@@ -25,5 +25,20 @@
       "Bash(git commit -n:*)",
       "Bash(git push --no-verify:*)"
     ]
-  }
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/commit-gate.sh",
+            "timeout": 300
+          }
+        ]
+      }
+    ]
+  },
+  "plansDirectory": "repos/khe-meta/plans"
 }

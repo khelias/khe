@@ -10,8 +10,8 @@ under `repos/`, and the AI-agent configuration sits here, once.
 khe/
   AGENTS.md              personal preferences, tool-agnostic
   CLAUDE.md              imports AGENTS.md and the estate index
-  .claude/settings.json  Claude Code settings
-  repos/repos.yaml       the repos this workspace clones
+  .claude/               settings and the commit-gate hook
+  repos/repos.yaml       the repos this workspace clones, with their checks
   repos/<name>/          independent clones, gitignored
   scripts/workspace.sh   clone | pull | status
 ```
