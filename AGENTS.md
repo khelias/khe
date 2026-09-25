@@ -90,6 +90,11 @@ Corrections the operator has had to make more than once:
   v3 currently" beats "DO NOT use v4", which goes silently wrong the day v4
   lands. Hard prohibitions stay for security and invariants, with an override
   path ("without an ADR").
+- A README is for people and holds what rarely changes: what the repo is and
+  why, the few commands to run it, where it lives, and links to the rest. No
+  versions, counts, file trees, full command lists or rules: those live in
+  `package.json`, `AGENTS.md`, `ARCHITECTURE.md` or the code, and a copy in
+  the README is the one that goes stale. The CI badge is the live status.
 - Edit existing docs; do not add new doc files (READMEs, CHANGELOGs) unless
   asked.
 - Verification artifacts (screenshots, saved pages, one-off scripts) go to the
