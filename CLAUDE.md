@@ -27,9 +27,10 @@ operator asks.
 
 - **Plan** a non-trivial change in plan mode and save it as a file in the
   repo it belongs to, with each step's check command.
-- **Execute** a written plan with `/goal <condition provable from output>
-  or stop after N turns`, e.g. every step checked and the repo's test
-  commands exit 0.
+- **Execute** a written plan through `/goal`, which only the operator can
+  type: end the planning turn with the exact line to paste, a condition
+  provable from output plus a turn cap, e.g. `/goal every step in
+  plans/x.md is checked and npm test exits 0, or stop after 20 turns`.
 - **Review** before committing a non-trivial code change: `/code-review`
   (medium; `high` for risky or public-facing changes). Verify each finding
   against the code before fixing it, fix the confirmed ones, drop the rest,
