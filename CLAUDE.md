@@ -42,6 +42,10 @@ effort; no `/effort ultracode` or workflows unless the operator asks.
   `.claude/skills/`, scoped with `paths:`.
 - **Grep reaches `repos/` only through `.rgignore`**, which negates the
   `.gitignore` entry.
+- **The browser pane reads only this root's `.claude/launch.json`**
+  (gitignored, per machine), not a repo's own. Commands run from the root,
+  so paths start with `repos/<name>/`. Serve a static build with
+  `python3 -m http.server <port> --directory <path>`.
 - **The Bash sandbox blocks raw TCP.** WebSocket scripts need
   `dangerouslyDisableSandbox: true`; `curl` and REST do not.
 - **The pretooluse guard fails the whole command** if it contains a recursive
