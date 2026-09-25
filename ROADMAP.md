@@ -4,7 +4,7 @@ Open work from the 2026-09-25 review against Claude Code 2.1.282, Codex and
 the Agent Skills spec. Done items from that review are logged in
 [`LAST_REVIEWED.md`](LAST_REVIEWED.md). Order is by payoff against effort.
 
-## Now: become the workspace repo
+## Now: finish the workspace move
 
 Decided 2026-09-25. This repo turns into the KHE workspace root, the
 "meta-repo / repo-of-repos" layout: `<KHE_ROOT>` itself is the checkout, the
@@ -27,31 +27,16 @@ load only when a session starts in that repo; skills needed from the
 workspace root live in the root `.claude/skills/`, scoped with `paths:`.
 No child repo has skills today, so nothing is lost.
 
-Steps (agent, local):
-
-1. Restructure this repo in place and commit: `skills/`, `agents/`,
-   `hooks/`, `settings.json` move under `.claude/`; `CLAUDE.md` takes the
-   umbrella content and imports `@repos/khe-meta/ESTATE.md`;
-   `CLAUDE-umbrella.md`, `install.sh`, `install.ps1` and the CI install job
-   go; add `repos/repos.yaml` (name, url, description), `repos/README.md`,
-   `scripts/workspace.sh clone|pull|status`, `.gitignore`, `.rgignore`.
-   Validator and docs follow the new paths.
-2. Move on disk: drop the root symlinks, lift this checkout up to
-   `<KHE_ROOT>`, move every other repo into `repos/`. `<KHE_ROOT>` keeps its
-   path, so auto memory, session history and `settings.local.json` stay.
-3. Local state: `.claude/launch.json` paths to `repos/...`; replace the
-   ~540-rule `settings.local.json` with a clean one (old copy kept outside
-   the repo).
-4. Verify: clean `git status` at the root and in every repo,
-   `workspace.sh status`, validator, and a headless session at the root
-   that lists the skills and greps into `repos/`.
-5. Sweep references: `khe-meta` (ESTATE.md, README), mentions in
-   `khe-homelab` and `khe-study`, the absolute path in
-   `khe-study/docs/qa/full-game-qa-smoke-prompt.md`, auto-memory entries
-   with old paths.
+Done locally on 2026-09-25: config under `.claude/`, `repos/repos.yaml` +
+`scripts/workspace.sh`, `.gitignore` + `.rgignore`, install scripts and
+symlinks removed, the checkout lifted to `<KHE_ROOT>` and the repos moved
+into `repos/`, `settings.local.json` reset, references swept in `khe-meta`,
+`khe-study` and auto memory. Verified with a headless session at the root:
+skills and agents load, `AGENTS.md` and `ESTATE.md` are in context, Grep
+finds files under `repos/`.
 
 Steps (operator): rename the GitHub repo, point `origin` at the new URL,
-push this repo and every repo touched in step 5.
+push this repo, `khe-meta` and `khe-study`.
 
 Known trade-off: a desktop session started in worktree mode at the root
 gets a worktree without `repos/`. Start such sessions inside the repo.
