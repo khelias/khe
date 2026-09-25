@@ -43,9 +43,15 @@ effort; no `/effort ultracode` or workflows unless the operator asks.
   made by merge, cherry-pick, revert or rebase are not scanned, and a
   same-call `git add -f` is refused: force-add first, then commit. A false
   positive gets an allowlist entry with a reason in `pii-rules.toml`.
-- **Parallel sessions:** for a second session in the same repo, use a
-  worktree of `repos/<name>`, not a desktop worktree of the workspace root,
-  which has no `repos/`. Install dependencies there before committing.
+- **Parallel sessions share each repo's working tree.** Run `git status` in
+  the repo before the first edit; if it shows changes this session did not
+  make, another session is there: work in a worktree of `repos/<name>`
+  (not a desktop worktree of the workspace root, which has no `repos/`) and
+  install dependencies there before committing. Stage by path: the gate
+  refuses `git add -A`, `git add .`, `git add -u` and `git commit -a`, and
+  a commit whose repo it cannot resolve (a shell variable in `-C` or `cd`).
+  A plan file in `repos/khe-meta/plans/` is committed by its own path, in its
+  own commit.
 - **Skills in `repos/<name>/.claude/skills/` do not load from here**
   (gitignored directories are skipped). A needed skill goes in this repo's
   `.claude/skills/`, scoped with `paths:`.

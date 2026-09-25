@@ -3,40 +3,84 @@
 # of the workspace repos, scan what the commit adds for personal-data patterns
 # (.claude/hooks/pii-rules.toml, skipped for repos marked `private: true` in
 # repos/repos.yaml), then run that repo's `check:` command. Either failing
-# blocks the commit (exit 2, output to stderr). Other Bash calls pass through
-# untouched, so a passing commit costs no tokens.
+# blocks the commit (exit 2, output to stderr), as does a commit whose repo it
+# cannot resolve. It also refuses `git add -A/./-u` and `git commit -a` in any
+# call. Other Bash calls pass through untouched, so a passing commit costs no
+# tokens.
 set -uo pipefail
 
 input="$(cat)"
 cmd="$(jq -r '.tool_input.command // empty' <<<"$input")"
-git_re='(^|[;&|[:space:]/])git(([[:space:]]+-[Cc][[:space:]]+[^[:space:]]+)*)[[:space:]]+'
-[[ "$cmd" =~ ${git_re}commit([[:space:]]|$) ]] || exit 0
-
 cwd="$(jq -r '.cwd // empty' <<<"$input")"
 root="${CLAUDE_PROJECT_DIR:-$cwd}"
+git_re='(^|[;&|([:space:]/])git(([[:space:]]+-[Cc][[:space:]]+[^[:space:]]+)*)[[:space:]]+'
 
-unquote() { local v="$1"; v="${v%\"}"; v="${v#\"}"; v="${v%\'}"; v="${v#\'}"; printf '%s' "$v"; }
+# Matching runs on one line with heredoc bodies dropped and every quoted string
+# that holds a space replaced by Q: a message or PR body that mentions a git
+# command must neither trigger nor block anything. Quoted paths keep their text.
+scan="$(awk '
+    skip { t = $0; gsub(/^[[:space:]]+|[[:space:]]+$/, "", t); if (t == delim) skip = 0; next }
+    { printf "%s;", $0 }
+    match($0, /(^|[^<])<<-?[[:space:]]*["\047]?[A-Za-z_][A-Za-z0-9_]*/) {
+        delim = substr($0, RSTART, RLENGTH); sub(/^[^<]?<<-?[[:space:]]*["\047]?/, "", delim); skip = 1
+    }' <<<"$cmd" | awk '{
+    out = ""; q = ""; tok = ""
+    for (i = 1; i <= length($0); i++) {
+        c = substr($0, i, 1)
+        if (q == "") { if (c == "\"" || c == "\047") { q = c; tok = c } else out = out c; continue }
+        tok = tok c
+        if (q == "\"" && c == "\\") { i++; tok = tok substr($0, i, 1); continue }
+        if (c == q) { out = out (tok ~ /[[:space:];]/ ? "Q" : tok); q = "" }
+    }
+    print out (q == "" ? "" : "Q")
+}')"
 
 fail() { echo "commit-gate: $1; commit blocked." >&2; exit 2; }
 
+# Parallel sessions share each repo's working tree, so staging everything
+# sweeps another session's files into this commit. Stage by path.
+sweep_add="${git_re}(add|stage)[[:space:]]([^;&|]*[[:space:]])?(-[A-Za-z]*[Au][A-Za-z]*|--all|--update|\.|:/|\"\.\"|'\.')([[:space:]]|;|\$)"
+sweep_commit="${git_re}commit[[:space:]]([^;&|]*[[:space:]])?(-[A-Za-z]*a[A-Za-z]*|--all)([[:space:]]|;|\$)"
+if [[ "$scan" =~ $sweep_add || "$scan" =~ $sweep_commit ]]; then
+    echo "commit-gate: 'git add -A/./-u' and 'git commit -a' stage files other sessions may be editing; blocked. Stage the files you changed by path." >&2
+    exit 2
+fi
+
+commit_re="${git_re}commit([[:space:]]|;|\$)"
+[[ "$scan" =~ $commit_re ]] || exit 0
+
+unquote() { local v="$1"; v="${v%\"}"; v="${v#\"}"; v="${v%\'}"; v="${v#\'}"; printf '%s' "$v"; }
+
 # The hook runs before the command, so a file force-added in the same call is
 # still ignored and invisible to the scan below.
-add_re="${git_re}add[[:space:]]([^;&|]*[[:space:]])?(-f|--force|-[A-Za-z]*f[A-Za-z]*)([[:space:]]|\$)"
-[[ "$cmd" =~ $add_re ]] &&
+add_re="${git_re}add[[:space:]]([^;&|]*[[:space:]])?(-f|--force|-[A-Za-z]*f[A-Za-z]*)([[:space:]]|;|\$)"
+[[ "$scan" =~ $add_re ]] &&
     fail "a same-call 'git add --force' cannot be scanned. Run the add as its own command first, then commit"
 
-# Each commit's directory: its `git -C <dir>`, else a leading `cd <dir> &&`,
-# else cwd. A command may commit in several repos; each one is gated.
-default_dir="$cwd"
-[[ "$cmd" =~ ^[[:space:]]*cd[[:space:]]+([^[:space:];&]+) ]] && default_dir="$(unquote "${BASH_REMATCH[1]}")"
+# Each commit's directory: its `git -C <dir>`, else the last `cd <dir>` before
+# it, else cwd. A command may commit in several repos; each one is gated.
+resolve() {
+    local d
+    d="$(unquote "$1")"
+    [[ "$d" == "~" || "$d" == "~/"* ]] && d="$HOME${d#"~"}"
+    [[ "$d" = /* ]] || d="$2/$d"
+    printf '%s' "$d"
+}
+cd_re='(^|[;&|([:space:]])cd[[:space:]]+([^[:space:];&|)]+)'
+dir="$cwd"
 dirs=()
-rest="$cmd"
-while [[ "$rest" =~ ${git_re}commit([[:space:]]|$) ]]; do
-    rest="${rest#*"${BASH_REMATCH[0]}"}"
-    d="$default_dir"
-    [[ "${BASH_REMATCH[2]}" =~ -C[[:space:]]+([^[:space:]]+) ]] && d="$(unquote "${BASH_REMATCH[1]}")"
-    [[ "$d" = /* ]] || d="$cwd/$d"
+rest="$scan"
+while [[ "$rest" =~ $commit_re ]]; do
+    m="${BASH_REMATCH[0]}" flags="${BASH_REMATCH[2]}"
+    pre="${rest%%"$m"*}"
+    while [[ "$pre" =~ $cd_re ]]; do
+        dir="$(resolve "${BASH_REMATCH[2]}" "$dir")"
+        pre="${pre#*"${BASH_REMATCH[0]}"}"
+    done
+    d="$dir"
+    [[ "$flags" =~ -C[[:space:]]+([^[:space:]]+) ]] && d="$(resolve "${BASH_REMATCH[1]}" "$dir")"
     dirs+=("$d")
+    rest="${rest#*"$m"}"
 done
 
 tmp_root="$(mktemp -d)" && [[ -d "$tmp_root" ]] || fail "no temporary directory for the personal-data scan"
@@ -46,8 +90,11 @@ gate() {
     local dir="$1"
     # A worktree's common dir is still repos/<name>/.git, which names the repo;
     # the root repo's common dir is the same from any of its worktrees.
-    common="$(git -C "$dir" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" || return 0
-    top="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null)" || return 0
+    # A directory the hook cannot resolve (a shell variable, a path that does not
+    # exist, a cd it cannot follow) must not pass unchecked.
+    common="$(git -C "$dir" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" &&
+        top="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null)" ||
+        fail "cannot tell which repo '$dir' is. Commit one repo per command, as 'git -C <absolute path> commit'"
     root_common="$(git -C "$root" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"
     case "$common" in
         "$root"/repos/*/.git) name="${common#"$root"/repos/}"; name="${name%/.git}"; label="repos/$name" ;;

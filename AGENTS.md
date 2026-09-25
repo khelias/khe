@@ -24,7 +24,9 @@ touches a running host:
 - `git push`, `ssh`, and any command against the homelab VM are the operator's.
   Hand them over as complete, copy-pasteable command blocks, one command per
   block, in the order they must run. A half-given chain costs a round trip.
-- Commit locally as normal. Say plainly what still needs pushing.
+- Commit locally as normal. Say plainly what still needs pushing. Before
+  handing over a push, list `git log --oneline @{u}..` for that repo and name
+  any commit this session did not make: the push ships them too.
 - Ask clarifying questions before writing, not after the operator has pushed
   a first draft: every iteration costs them a push.
 - Read-only APIs (Home Assistant, GitHub) the agent uses directly.
