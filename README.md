@@ -10,7 +10,7 @@ under `repos/`, and the AI-agent configuration sits here, once.
 khe/
   AGENTS.md              personal preferences, tool-agnostic
   CLAUDE.md              imports AGENTS.md and the estate index
-  .claude/               settings, skills, agents
+  .claude/settings.json  Claude Code settings
   repos/repos.yaml       the repos this workspace clones
   repos/<name>/          independent clones, gitignored
   scripts/workspace.sh   clone | pull | status
@@ -35,10 +35,12 @@ so `~/.claude/` and `~/.codex/` keep serving other projects.
   commit here for each change elsewhere.
 - **Gitignored `repos/` has two side effects in Claude Code**, both handled:
   Grep skips it (`.rgignore` puts it back), and skills inside a repo load
-  only in a session started in that repo, so shared skills live here.
-- **Small on purpose.** Standards ([agents.md](https://agents.md/),
-  [Agent Skills](https://agentskills.io/)) over frameworks, and every file
-  earns its place.
+  only in a session started in that repo.
+- **Built-ins over custom skills.** Plan mode, `/goal`, `/code-review` and
+  `/run` cover plan, execute, review and verify; `CLAUDE.md` says when to
+  use each. A custom skill is added only for knowledge no built-in can have.
+- **Small on purpose.** Standards ([agents.md](https://agents.md/)) over
+  frameworks, and every file earns its place.
 
 The layout follows the common 2026 multi-repo pattern for coding agents, see
 [Repo-of-Repos](https://raffertyuy.com/raztype/repo-of-repos-pattern/) and

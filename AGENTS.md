@@ -71,10 +71,6 @@ day v4 lands. Architectural prohibitions stay (security, invariants),
 but couple them with an override path ("without an ADR") so the rule
 is not a permanent lock.
 
-The `audit-agents-md` skill (loaded from `<KHE_ROOT>/.claude/skills/`)
-can be invoked on demand to check whether a project's AGENTS.md drifted
-from reality.
-
 ## Who runs what
 
 The agent prepares, the operator executes anything that leaves this machine or
@@ -174,7 +170,7 @@ and advice that gets ignored.
 ## What goes elsewhere
 
 - **Project-specific commands and architecture** → that project's `AGENTS.md`
-- **Workflow recipes** (TDD loop, verification, commit style) → `.claude/skills/<name>/SKILL.md`
-- **Specialized review/planning tasks** → `.claude/agents/*.md` (delegate via subagent)
+- **Workflow** (plan, review, verify) → the tool's built-ins, listed in `CLAUDE.md` for Claude Code.
+  A custom skill in `.claude/skills/` only for knowledge no built-in or plugin can have
 - **Claude Code hook scripts** → `.claude/hooks/*.{sh,js}`
 - **Claude-specific imports/extensions** → `CLAUDE.md`
