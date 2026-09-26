@@ -62,8 +62,9 @@ cmd_status() {
         fi
         branch="$(git -C "$target" branch --show-current)"
         dirty="$(git -C "$target" status --porcelain | wc -l | tr -d ' ')"
+        # pipefail turns a branch without an upstream into a fatal assignment.
         counts="$(git -C "$target" rev-list --left-right --count '@{upstream}...HEAD' 2>/dev/null \
-            | awk '{print "+" $2 "/-" $1}')"
+            | awk '{print "+" $2 "/-" $1}')" || counts=""
         printf '  %-18s %-32s %6s %s\n' "$name" "$branch" "$dirty" "${counts:-no upstream}"
     done < <(entries)
 }
