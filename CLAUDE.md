@@ -21,7 +21,10 @@ effort; no `/effort ultracode` or workflows unless the operator asks.
   type: end the planning turn with the exact line to paste, a condition
   provable from output plus a turn cap, e.g. `/goal every step in
   repos/khe-meta/plans/x.md is checked and npm test exits 0 in the output,
-  or stop after 20 turns`.
+  or stop after 20 turns`. Also offer the same line as a `spawn_task` chip,
+  so one click runs it in a fresh session; whether the chip's prompt runs
+  as the slash command is unverified, so check the new session shows the
+  goal active.
 - **Review** every code change (not docs-only) before committing:
   `/code-review` (medium; `high` for risky or public-facing changes).
   Verify each finding against the code, fix the confirmed ones, and say
