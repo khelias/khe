@@ -12,7 +12,7 @@ repos:
     description: Estate index, portfolio decisions, private house documentation.
   - name: khe-homelab
     url: https://github.com/khelias/khe-homelab.git
-    check: bash -n scripts/*.sh
+    check: rc=0; for f in scripts/*.sh; do bash -n "$f" || rc=1; done; exit $rc
     description: Proxmox + Docker Compose infrastructure and Home Assistant.
   - name: khe-sites
     url: https://github.com/khelias/khe-sites.git
