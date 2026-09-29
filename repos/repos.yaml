@@ -3,7 +3,8 @@
 # this with a line parser, not a YAML library, so keep the flat shape.
 # check: runs in the repo before Claude commits there (.claude/hooks/commit-gate.sh).
 # private: true exempts a repo from the gate's personal-data scan; every other
-# repo, and one missing from this list, is scanned (.claude/hooks/pii-rules.toml).
+# repo is scanned (.claude/hooks/pii-rules.toml). The gate blocks commits in a
+# repo inside the workspace that is missing from this list.
 repos:
   - name: khe-meta
     url: https://github.com/khelias/khe-meta.git

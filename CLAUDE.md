@@ -47,7 +47,12 @@ effort; no `/effort ultracode` or workflows unless the operator asks.
 - **`git commit` in a repo is gated.** `.claude/hooks/commit-gate.sh` runs
   that repo's `check:` first and blocks the commit on failure. Fix the
   cause; never work around the gate. Do not run `check:` yourself right
-  before committing; the gate already does.
+  before committing; the gate already does. It knows a repo listed in
+  `repos/repos.yaml` by its git common dir under `repos/` of the session
+  root or the main checkout, so a worktree of `repos/<name>` is gated
+  wherever it sits, else by a remote that is its `url:` or its checkout.
+  Any other repo inside the workspace is blocked; repos outside it, such as
+  scratch repos, pass.
 - **The gate also scans for personal data** in every repo, the root
   included, unless `repos/repos.yaml` marks it `private: true`: lines the
   commit adds (staged, unstaged, untracked) and the message, against the

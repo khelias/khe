@@ -4,9 +4,9 @@
 # (.claude/hooks/pii-rules.toml, skipped for repos marked `private: true` in
 # repos/repos.yaml), then run that repo's `check:` command. Either failing
 # blocks the commit (exit 2, output to stderr), as does a commit whose repo it
-# cannot resolve. It also refuses `git add -A/./-u` and `git commit -a` in any
-# call. Other Bash calls pass through untouched, so a passing commit costs no
-# tokens.
+# cannot resolve or that is an unlisted repo inside the workspace. It also
+# refuses `git add -A/./-u` and `git commit -a` in any call. Other Bash calls
+# pass through untouched, so a passing commit costs no tokens.
 set -uo pipefail
 
 input="$(cat)"
@@ -48,6 +48,14 @@ fi
 
 commit_re="${git_re}commit([[:space:]]|;|\$)"
 [[ "$scan" =~ $commit_re ]] || exit 0
+
+# git@host:owner/repo, ssh://git@host/owner/repo.git and https://host/owner/repo
+# all become host/owner/repo.
+norm_url() {
+    local u="${1%/}"
+    u="${u%.git}"; u="${u#*://}"; u="${u#*@}"; u="${u/://}"
+    printf '%s' "$u" | tr '[:upper:]' '[:lower:]'
+}
 
 unquote() { local v="$1"; v="${v%\"}"; v="${v#\"}"; v="${v%\'}"; v="${v#\'}"; printf '%s' "$v"; }
 
@@ -96,11 +104,59 @@ gate() {
         top="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null)" ||
         fail "cannot tell which repo '$dir' is. Commit one repo per command, as 'git -C <absolute path> commit'"
     root_common="$(git -C "$root" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"
-    case "$common" in
-        "$root"/repos/*/.git) name="${common#"$root"/repos/}"; name="${name%/.git}"; label="repos/$name" ;;
-        "$root_common") name="khe"; label="the workspace root" ;;
-        *) return 0 ;;
-    esac
+    # A desktop worktree of the root has no clones in its repos/, so a repo
+    # worktree made from it keeps its common dir in the main checkout's repos/.
+    local ws=("$(cd "$root" 2>/dev/null && pwd -P || printf '%s' "$root")") w u r
+    [[ "$root_common" == */.git ]] && ws+=("${root_common%/.git}")
+
+    # Name the repo whose common dir is $1, only if repos.yaml lists it.
+    by_common() {
+        local w n
+        [[ -n "$root_common" && "$1" == "$root_common" ]] && { printf 'khe'; return; }
+        for w in "${ws[@]}"; do
+            n="${1#"$w"/repos/}"; n="${n%/.git}"
+            [[ "$1" == "$w/repos/$n/.git" && "$n" != */* ]] || continue
+            awk -v want="$n" '/^[[:space:]]*- name:/ { sub(/.*name:[[:space:]]*/, ""); if ($0 == want) f = 1 }
+                END { exit !f }' "$root/repos/repos.yaml" 2>/dev/null && printf '%s' "$n"
+            return
+        done
+    }
+    by_url() {
+        local want n yurl
+        want="$(norm_url "$1")"
+        while IFS=$'\t' read -r n yurl; do
+            [[ "$(norm_url "$yurl")" == "$want" ]] && { printf '%s' "$n"; return; }
+        done < <(awk '
+            /^[[:space:]]*- name:/ { sub(/.*name:[[:space:]]*/, ""); cur = $0; next }
+            /^[[:space:]]*url:/ { sub(/^[^:]*:[[:space:]]*/, ""); sub(/[[:space:]]+$/, ""); print cur "\t" $0 }
+        ' "$root/repos/repos.yaml" 2>/dev/null)
+    }
+
+    name="$(by_common "$common")"
+    # A clone elsewhere is still that repo if a remote is its URL or its checkout.
+    if [[ -z "$name" ]]; then
+        while read -r u; do
+            u="${u#file://}"
+            if [[ -d "$u" ]]; then
+                r="$(git -C "$u" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" &&
+                    name="$(by_common "$r")"
+            else
+                name="$(by_url "$u")"
+            fi
+            [[ -n "$name" ]] && break
+        done < <(git -C "$top" remote -v 2>/dev/null | awk '{ print $2 }' | sort -u)
+    fi
+    # Anything else inside the workspace (a nested repo, one missing from
+    # repos.yaml) fails closed; repos elsewhere, such as scratch repos, pass.
+    if [[ -z "$name" ]]; then
+        for w in "${ws[@]}"; do
+            [[ "$top/" == "$w/"* || "$common" == "$w/"* ]] &&
+                fail "'$top' is inside the workspace but is neither the root nor a repo listed in repos/repos.yaml"
+        done
+        return 0
+    fi
+    label="repos/$name"
+    [[ "$name" == khe ]] && label="the workspace root"
 
     yaml_key() {
         awk -v want="$name" -v key="$1" '
