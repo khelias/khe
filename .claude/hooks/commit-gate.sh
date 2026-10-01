@@ -106,7 +106,7 @@ gate() {
     root_common="$(git -C "$root" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"
     # A desktop worktree of the root has no clones in its repos/, so a repo
     # worktree made from it keeps its common dir in the main checkout's repos/.
-    local ws=("$(cd "$root" 2>/dev/null && pwd -P || printf '%s' "$root")") w u r
+    local ws=("$(cd "$root" 2>/dev/null && pwd -P || printf '%s' "$root")") w u r p
     [[ "$root_common" == */.git ]] && ws+=("${root_common%/.git}")
 
     # Name the repo whose common dir is $1, only if repos.yaml lists it.
@@ -137,8 +137,10 @@ gate() {
     if [[ -z "$name" ]]; then
         while read -r u; do
             u="${u#file://}"
-            if [[ -d "$u" ]]; then
-                r="$(git -C "$u" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" &&
+            # git stores a hand-added relative remote as typed, relative to the repo.
+            p="$u"; [[ "$p" = /* ]] || p="$top/$p"
+            if [[ -d "$p" ]]; then
+                r="$(git -C "$p" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" &&
                     name="$(by_common "$r")"
             else
                 name="$(by_url "$u")"
