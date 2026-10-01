@@ -16,7 +16,10 @@ effort; no `/effort ultracode` or workflows unless the operator asks.
   have a subagent without this conversation review it: what does the plan
   get wrong or leave out that would break the goal or correctness? Gaps,
   not style. Verify each finding, fix the plan for the real ones, say which
-  were dropped.
+  were dropped. Plan mode names the file with a random slug and allows no
+  other edits, so after leaving it rename the file (`git mv` once
+  committed) to a descriptive kebab-case name (`n8n-removal.md`) before
+  the `/goal` line names it.
 - **Execute** a written plan through `/goal`, which only the operator can
   type: end the planning turn with the exact line to paste, a condition
   provable from output plus a turn cap, e.g. `/goal every step in
