@@ -39,7 +39,8 @@ touches a running host:
   and measurements, HVAC, network. Device ids, LAN addresses of house devices
   and anything identifying live here and **never** in a public repo.
 - Each repo's own `AGENTS.md` - its commands, conventions and operating
-  procedure. `repos/khe-homelab/AGENTS.md` has the Home Assistant procedure.
+  procedure; the ha-estfeed fork has none. `repos/khe-homelab/AGENTS.md`
+  has the Home Assistant procedure.
 - `repos/repos.yaml` - the repos and each one's `check:` command;
   `scripts/workspace.sh status` shows branch and dirty state per repo.
 
