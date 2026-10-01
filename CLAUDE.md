@@ -35,11 +35,11 @@ effort; no `/effort ultracode` or workflows unless the operator asks.
   "every step is checked" is the executor's own claim until this passes.
   Fix the real gaps and say which findings were dropped.
 - **Review** every code change (not docs-only) before committing:
-  `/code-review` (medium; `high` for risky or public-facing changes). It
-  runs on the session's model, so after a `sonnet` goal ask the operator to
-  switch the session to `opus` first. Verify each finding against the code,
-  fix the confirmed ones, and say which were dropped. If you skip the
-  review, say so and why.
+  `/code-review` (medium; `high` for risky or public-facing changes).
+  Skills can pin a model and whether this one does is unverified, so after
+  a `sonnet` goal ask the operator to switch the session to `opus` first.
+  Verify each finding against the code, fix the confirmed ones, and say
+  which were dropped. If you skip the review, say so and why.
 - **See it working** for UI changes: `/run` in the browser pane.
 
 ## Harness facts
