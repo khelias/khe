@@ -82,9 +82,12 @@ effort; no `/effort ultracode` or workflows unless the operator asks.
   `python3 -m http.server <port> --directory <path>`.
 - **The Bash sandbox blocks raw TCP.** WebSocket scripts need
   `dangerouslyDisableSandbox: true`; `curl` and REST do not.
-- **The pretooluse guard fails the whole command** if it contains a recursive
-  `rm`, a `git checkout --` on a repo file, or a read of any `.env*` file,
-  including `.example`. Revert with an edit instead, and ask the operator to
-  run anything the guard refuses. Deleting config entries and bulk
-  enable/disable scripts also get blocked; inline Python on named entities
-  passes.
+- **This machine blocks commands outside this repo's control.**
+  `~/.claude/guardrails/pretooluse-guard.sh` fails the whole Bash command on
+  a recursive `rm`, `git checkout --`, `git reset --hard` and other
+  destructive git, kubectl, helm and docker patterns. User-settings deny
+  rules refuse any `rm`; managed settings deny reading `.env` and `.env.*`
+  (`.example` included), `ssh` and `git push`. Revert with an edit instead,
+  and ask the operator to run anything refused. Deleting config entries and
+  bulk enable/disable scripts are stopped by the auto mode classifier, not a
+  rule, so the outcome varies; inline Python on named entities passes.
