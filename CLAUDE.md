@@ -24,11 +24,22 @@ effort; no `/effort ultracode` or workflows unless the operator asks.
   or stop after 20 turns`. Also offer the same line as a `spawn_task` chip,
   so one click runs it in a fresh session; whether the chip's prompt runs
   as the slash command is unverified, so check the new session shows the
-  goal active.
+  goal active. Say which model the goal session should run: `sonnet` when
+  every step is mechanical and spelled out, `opus` when steps leave
+  judgement calls. The operator sets it in the new session, since switching
+  models inside a session drops the earlier thinking.
+- **Check against the plan** after a `/goal` run, before the review: a
+  subagent with `model: opus` compares the diff to the plan file. Every
+  step implemented, the listed edge cases tested, nothing outside the
+  plan's scope changed. The goal evaluator reads only the transcript, so
+  "every step is checked" is the executor's own claim until this passes.
+  Fix the real gaps and say which findings were dropped.
 - **Review** every code change (not docs-only) before committing:
-  `/code-review` (medium; `high` for risky or public-facing changes).
-  Verify each finding against the code, fix the confirmed ones, and say
-  which were dropped. If you skip the review, say so and why.
+  `/code-review` (medium; `high` for risky or public-facing changes). It
+  runs on the session's model, so after a `sonnet` goal ask the operator to
+  switch the session to `opus` first. Verify each finding against the code,
+  fix the confirmed ones, and say which were dropped. If you skip the
+  review, say so and why.
 - **See it working** for UI changes: `/run` in the browser pane.
 
 ## Harness facts
