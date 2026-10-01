@@ -52,7 +52,10 @@ Report failures as failures. If it cannot be verified here, say so.
 
 ## Judgement
 
-Corrections the operator has had to make more than once:
+Corrections the operator has had to make more than once. When a correction
+repeats one made before (check memory and past transcripts), propose a
+one-line entry here, or a hook if it can be checked mechanically. Do not add
+it unasked; a one-off correction goes to memory.
 
 - **Check a fact at its source before calling it a problem.** One row of data
   is not a finding. Do not recommend undoing a decision, a booking or a
